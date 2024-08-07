@@ -1,0 +1,13 @@
+/* Footer.css */
+.Footer {
+    background-color: #333; /* Dark background */
+    color: #fff; /* White text */
+    text-align: center; /* Center the text */
+    padding: 0.05px; /* Add some padding */
+    position: relative; /* Footer stays at the bottom of the page */
+    bottom: 0;
+    width: 100%;
+    font-size: 0.75rem; /* Smaller font size */
+    border-top: 1px solid #444; /* Optional: Add a top border */
+  }
+  

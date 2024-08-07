@@ -1,0 +1,63 @@
+.HomePage {
+  text-align: center;
+}
+
+.HomePage-header {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: #333; /* Dark text for contrast */
+}
+
+.HomePage-link {
+  color: #36454f; /* Dark green text */
+  text-decoration: none;
+  font-weight: bold;
+  border: 2px solid #36454f; /* Dark green border */
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.HomePage-link:hover {
+  background-color: #36454f;
+  color: #fff; /* White text on hover */
+}
+
+.HomePage-section {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  font-size: 1.25rem; /* Larger font size */
+}
+
+.HomePage-section-content {
+  flex: 1;
+  text-align: left;
+}
+
+.HomePage-section-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+}
+
+.HomePage-section-alt {
+  flex-direction: row-reverse;
+}
+
+.HomePage-section-alt .HomePage-section-content {
+  text-align: right;
+}
+
+.HomePage-section-alt .HomePage-section-button {
+  order: -1; /* Move button to the left in alt layout */
+}

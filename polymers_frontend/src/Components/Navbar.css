@@ -1,0 +1,116 @@
+/* Navbar Styling */
+.Navbar {
+  background-color: #36454f; /* Dark green background */
+  color: #fff; /* White text */
+  display: flex;
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically */
+  padding: 10px 20px; /* Adjust padding for a better size */
+  position: fixed; /* Fix the navbar to the top */
+  top: 0;
+  left: 0; /* Ensure navbar starts from the left edge */
+  width: 100%; /* Ensure the navbar spans the full width */
+  z-index: 1000; /* Ensure it stays on top of other elements */
+  height: 60px; /* Set a fixed height for consistent vertical centering */
+  transition: all 0.3s ease; /* Smooth transition for responsiveness */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for better separation */
+}
+
+/* Container to center items */
+.Navbar-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px; /* Adjust based on your design */
+  margin: 0 auto; /* Center container */
+}
+
+/* Center logo and links */
+.Navbar-logo-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 2rem; /* Increase font size for the logo */
+  font-weight: bold;
+}
+
+.Navbar-links {
+  display: flex;
+  gap: 20px; /* Use gap instead of margin-left for spacing */
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.Navbar-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.2rem; /* Increase font size for the links */
+  transition: opacity 0.3s ease;
+}
+
+.Navbar-link:hover {
+  opacity: 0.7;
+}
+
+.Navbar-dropdown-button {
+  display: none; /* Hidden by default */
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Dropdown menu styling */
+.Navbar-links.show {
+  display: flex; /* Show the links when dropdown is active */
+  flex-direction: column;
+}
+
+.logout-popup {
+  position: fixed; /* Fixed positioning to keep it in place */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for centering */
+  background-color: #fff;
+  color: #333;
+  padding: 20px; /* Increased padding for better appearance */
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 2000; /* Ensure it is above other elements */
+}
+
+/* Add responsiveness */
+@media (max-width: 768px) {
+  .Navbar-links {
+    display: none; /* Hide links on mobile by default */
+  }
+
+  .Navbar-dropdown-button {
+    display: block; /* Show dropdown button on mobile */
+  }
+
+  .Navbar-links.show {
+    position: absolute;
+    top: 60px; /* Position dropdown menu below the navbar */
+    left: 0;
+    background-color: #355E3B; /* Match the navbar background */
+    width: 100%;
+    padding: 10px 0;
+  }
+}
+
+/* Style for logout link to look like a button */
+.Navbar-logout-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.2rem;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.Navbar-logout-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
