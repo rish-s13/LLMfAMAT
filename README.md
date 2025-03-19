@@ -13,5 +13,3 @@ The steps for realizing this project would include:
 3) Fine-tune the LLM.
 4) Develop test cases for verifying the LLM.
 5) Develop a MERN-stack based UI to implement the above test cases.
-
-[Link to the website repository](https://github.com/rish-s13/Polymers)
