@@ -1,0 +1,178 @@
+!pip install accelerate peft bitsandbytes trl
+import torch
+from peft import LoraConfig, AutoPeftModelForCausalLM
+from trl import SFTTrainer
+import torch
+from peft import LoraConfig, AutoPeftModelForCausalLM
+from trl import SFTTrainer
+
+
+
+from transformers import AutoModelForCausalLM, AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained("stabilityai/stablelm-2-1_6b")
+model = AutoModelForCausalLM.from_pretrained(
+  "stabilityai/stablelm-2-1_6b",
+  torch_dtype="auto",
+)
+model.cuda()
+inputs = tokenizer("The weather is always wonderful", return_tensors="pt").to(model.device)
+tokens = model.generate(
+  **inputs,
+  max_new_tokens=64,
+  temperature=0.70,
+  top_p=0.95,
+  do_sample=True,
+)
+print(tokenizer.decode(tokens[0], skip_special_tokens=True))
+
+
+with open("/content/scraped_data_with_titles (preprocessed).csv", "r") as data_file:
+    data = data_file.read()
+
+
+
+!pip install --upgrade torch
+pip install transformers datasets torch pandas
+!pip install accelerate -U
+!pip install accelerate -U
+!pip install --upgrade transformers
+
+
+def get_model_and_tokenizer(mode_id):
+  tokenizer  = AutoTokenizer.from_pretrained(mode_id)
+  tokenizer.pad_token = tokenizer.eos_token
+  bnb_config = BitsAndBytesConfig(
+      load_in_4bit=True,
+      bnb_4bit_quant_type="nf4",
+      bnb_4bit_compute_dtype="float16",
+      bnb_4bit_use_double_quant=True
+  )
+  model = AutoModelForCausalLM.from_pretrained
+
+peft_config = LoraConfig(
+    r=8,
+    lora_alpha=16,
+    lora_dropout=0.05,
+    bias="none",
+    task_type="CAUSAL_LM"
+)
+
+
+
+
+
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Trainer, TrainingArguments, DataCollatorForLanguageModeling
+from datasets import Dataset
+import pandas as pd
+import torch
+from accelerate import infer_auto_device_map, dispatch_model
+
+# Load cleaned data
+data = pd.read_csv('/content/scraped_data_with_titles (preprocessed).csv')
+
+# Prepare the dataset
+def preprocess_data(data):
+    # Concatenate all columns to create a single text column
+    data['text'] = data.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
+    return data[['text']]
+preprocessed_data = preprocess_data(data)
+preprocessed_data = preprocessed_data
+
+
+# Convert to Hugging Face Dataset
+dataset = Dataset.from_pandas(preprocessed_data)
+
+# Tokenize the data
+tokenizer = AutoTokenizer.from_pretrained("stabilityai/stablelm-2-1_6b")
+tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+
+def tokenize_function(examples):
+    return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=16)  # Further reduce max_length
+
+tokenized_dataset = dataset.map(tokenize_function, batched=True, remove_columns=["text"])
+# Data collator for language modeling
+data_collator = DataCollatorForLanguageModeling(
+    tokenizer=tokenizer,
+    mlm=False,
+)
+
+# Define training arguments
+training_args = TrainingArguments(
+    output_dir="./results",
+    overwrite_output_dir=True,
+    num_train_epochs=1,
+    optim="adamw_hf",
+    per_device_train_batch_size=1,
+    save_steps=20_000,  # Adjust save_steps
+    save_total_limit=2,
+    prediction_loss_only=True,
+    fp16=True,
+    learning_rate=2e-4,
+    lr_scheduler_type="cosine",
+    save_strategy="epoch",
+    logging_steps=10,
+    max_steps=250,
+    gradient_accumulation_steps=4  # Further reduce gradient_accumulation_steps
+)
+
+# Load pre-trained model with parts offloaded to CPU
+model = AutoModelForCausalLM.from_pretrained("stabilityai/stablelm-2-1_6b", use_cache=False)
+
+device_map = infer_auto_device_map(model, max_memory={0: "8GiB", "cpu": "30GiB"})
+model = dispatch_model(model, device_map=device_map)
+
+model.resize_token_embeddings(len(tokenizer))
+
+# Clear GPU cache before initializing Trainer
+torch.cuda.empty_cache()
+
+trainer = SFTTrainer(
+    model=model,
+    train_dataset=tokenized_dataset,
+    peft_config=peft_config,
+    args=training_args,
+    data_collator=data_collator
+)
+
+trainer.train()
+
+
+from peft import AutoPeftModelForCausalLM, PeftModel
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
+model_id = "stabilityai/stablelm-2-1_6b"
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+
+model = AutoModelForCausalLM.from_pretrained(model_id,torch_dtype=torch.float16, load_in_8bit=False, device_map="auto",trust_remote_code=True)
+model.resize_token_embeddings(len(tokenizer))
+model_path = "/content/results/checkpoint-247"
+peft_model = PeftModel.from_pretrained(model,model_path, from_transformers=True,device_map="auto")
+model = peft_model.merge_and_unload()
+
+
+
+from transformers import GenerationConfig
+from time import perf_counter
+
+def generate_response(user_input):
+  prompt = formatted_prompt(user_input)
+
+  inputs = tokenizer([prompt], return_tensors="pt")
+  generation_config = GenerationConfig(penalty_alpha=0.6, do_sample=True, top_k=50, temperature=0.7, repetition_penalty=1.2, max_new_tokens=50, pad_token_id=tokenizer.eos_token_id)
+
+  start_time = perf_counter()
+  inputs = tokenizer(prompt, return_tensors="pt").to('cuda')
+
+  outputs = model.generate(
+      **inputs,
+      generation_config=generation_config)
+
+  print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+  output_time = perf_counter() - start_time
+  # print(f"Output time: {output_time:.2f} seconds")
+def formatted_prompt(question)-> str:
+  return f"<|im_start|>user\n{question}<|im_end|>\n<|im_start|>assistant:|"
+
+
+generate_response(user_input='properties of poly(N-isopropylacrylamide)')
